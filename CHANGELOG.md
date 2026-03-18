@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.3.0...v1.4.0) (2026-03-18)
+
+
+### Features
+
+* Unicode sparkline charts in counter_monitor stats ([3a03497](https://github.com/calltelemetry/cisco-ris-mcp/commit/3a03497b89f933e274b6e590ca3302351b6445db))
+
 # [1.3.0](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.2.0...v1.3.0) (2026-03-18)
 
 
