@@ -38,12 +38,28 @@ export interface CounterStats {
   type: CounterType;
   values: number[];
   timestamps: number[];
+  sparkline: string;
   min: number;
   max: number;
   avg: number;
   delta: number;
   rate: number;
   latest: number;
+}
+
+const SPARK_CHARS = "▁▂▃▄▅▆▇█";
+
+/** Generate a Unicode sparkline from numeric values */
+export function sparkline(values: number[]): string {
+  if (values.length === 0) return "";
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min;
+  if (range === 0) return SPARK_CHARS[0]!.repeat(values.length);
+  return values.map(v => {
+    const idx = Math.round(((v - min) / range) * (SPARK_CHARS.length - 1));
+    return SPARK_CHARS[idx];
+  }).join("");
 }
 
 /** Known counter classifications for presets */
@@ -99,7 +115,7 @@ export function computeStats(samples: TimestampedSample[], counterName: string):
   }
 
   if (values.length === 0) {
-    return { name: counterName, type, values: [], timestamps: [], min: 0, max: 0, avg: 0, delta: 0, rate: 0, latest: 0 };
+    return { name: counterName, type, values: [], timestamps: [], sparkline: "", min: 0, max: 0, avg: 0, delta: 0, rate: 0, latest: 0 };
   }
 
   const min = Math.min(...values);
@@ -110,5 +126,5 @@ export function computeStats(samples: TimestampedSample[], counterName: string):
   const rate = durationSec > 0 ? delta / durationSec : 0;
   const latest = values[values.length - 1]!;
 
-  return { name: counterName, type, values, timestamps, min, max, avg, delta, rate, latest };
+  return { name: counterName, type, values, timestamps, sparkline: sparkline(values), min, max, avg, delta, rate, latest };
 }

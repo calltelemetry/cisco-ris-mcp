@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { getTools } from "../src/tools/index.js";
-import { computeStats, classifyCounter, bareCounterName, COUNTER_PRESETS } from "../src/types/perfmon-types.js";
+import { computeStats, classifyCounter, bareCounterName, sparkline, COUNTER_PRESETS } from "../src/types/perfmon-types.js";
 import type { TimestampedSample } from "../src/types/perfmon-types.js";
 
 describe("MCP Conformance", () => {
@@ -124,6 +124,8 @@ describe("computeStats", () => {
     expect(stats.max).toBe(8);
     expect(stats.avg).toBeCloseTo(5.33, 1);
     expect(stats.latest).toBe(3);
+    expect(stats.sparkline).toBeTruthy();
+    expect(stats.sparkline.length).toBe(3);
   });
 
   it("computes delta/rate for monotonic counters", () => {
@@ -154,5 +156,45 @@ describe("computeStats", () => {
     const stats = computeStats(samples, "NonExistentCounter");
     expect(stats.type).toBe("unknown");
     expect(stats.values).toHaveLength(0);
+    expect(stats.sparkline).toBe("");
+  });
+
+  it("includes sparkline in stats", () => {
+    const stats = computeStats(samples, "CallsActive");
+    // Values: 5, 8, 3 → normalized to mid, high, low → ▄█▁
+    expect(stats.sparkline).toMatch(/[▁▂▃▄▅▆▇█]{3}/);
+  });
+});
+
+describe("sparkline", () => {
+  it("generates sparkline from values", () => {
+    const result = sparkline([0, 1, 2, 3, 4, 5, 6, 7]);
+    expect(result).toBe("▁▂▃▄▅▆▇█");
+  });
+
+  it("handles flat values", () => {
+    const result = sparkline([5, 5, 5, 5]);
+    expect(result).toBe("▁▁▁▁");
+  });
+
+  it("handles single value", () => {
+    const result = sparkline([42]);
+    expect(result).toBe("▁");
+  });
+
+  it("handles empty array", () => {
+    expect(sparkline([])).toBe("");
+  });
+
+  it("handles ascending ramp", () => {
+    const result = sparkline([0, 25, 50, 75, 100]);
+    expect(result[0]).toBe("▁");
+    expect(result[4]).toBe("█");
+    expect(result.length).toBe(5);
+  });
+
+  it("handles spike pattern", () => {
+    const result = sparkline([0, 0, 100, 0, 0]);
+    expect(result).toBe("▁▁█▁▁");
   });
 });

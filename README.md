@@ -32,6 +32,20 @@ An [MCP](https://modelcontextprotocol.io/) server that gives AI assistants direc
 - *"Are any CTI applications connected? What's their status?"*
 - *"Compare registration counts to what CUCM thinks is registered via PerfMon"*
 
+### Usage Collection & Trending
+- *"Monitor call volume for the next 5 minutes and show me the trend"*
+- *"Track registration changes — are phones dropping off?"*
+- *"Collect CPU samples every 10 seconds and graph the usage"*
+- *"Start monitoring SIP trunk activity while I make test calls"*
+- *"How is MTP utilization trending during business hours?"*
+
+Results include **Unicode sparklines** for visual trending:
+```
+CallsActive      ▁▁▂▃▅▇█▇▅▃▂▁  min=0 max=47 avg=18.3
+CallsCompleted   ▁▂▃▄▅▆▇█▇▇██  delta=234 rate=3.9/s
+RegisteredPhones ████████████▇  min=847 max=850 avg=849
+```
+
 ### Inventory & Reporting
 - *"How many phones are registered by model/firmware?"*
 - *"List all registered hardware phones and their IPs"*
@@ -367,36 +381,29 @@ Retrieve samples from a running or completed monitor with computed statistics pe
 { "monitorId": "mon-1773846059140-5md4o5" }
 ```
 
-**Output (from live CUCM 15 cluster, 4 samples over 40 seconds):**
+**Output (includes Unicode sparklines for visual trending):**
 
 ```json
 {
   "monitorId": "mon-1773846059140-5md4o5",
   "status": "running",
-  "samplesCollected": 4,
-  "maxSamples": 10,
-  "durationMs": 40433,
+  "samplesCollected": 10,
+  "maxSamples": 100,
+  "durationMs": 100000,
   "stats": [
     {
       "name": "CallsActive",
       "type": "gauge",
-      "min": 0, "max": 0, "avg": 0,
-      "delta": 0, "rate": 0, "latest": 0,
-      "timestamps": [1773846073224, 1773846083220, 1773846093271, 1773846103221]
-    },
-    {
-      "name": "CallsAttempted",
-      "type": "counter",
-      "min": 0, "max": 0, "avg": 0,
-      "delta": 0, "rate": 0, "latest": 0,
-      "timestamps": [1773846073224, 1773846083220, 1773846093271, 1773846103221]
+      "sparkline": "▁▂▃▅▇█▇▅▃▁",
+      "min": 0, "max": 47, "avg": 18.3,
+      "delta": 0, "rate": 0, "latest": 2
     },
     {
       "name": "CallsCompleted",
       "type": "counter",
-      "min": 0, "max": 0, "avg": 0,
-      "delta": 0, "rate": 0, "latest": 0,
-      "timestamps": [1773846073224, 1773846083220, 1773846093271, 1773846103221]
+      "sparkline": "▁▂▃▄▅▆▆▇▇█",
+      "min": 1200, "max": 1438, "avg": 1319,
+      "delta": 238, "rate": 2.38, "latest": 1438
     }
   ]
 }
@@ -426,12 +433,11 @@ Stops a running monitor, closes the PerfMon session on CUCM, and returns final s
 {
   "monitorId": "mon-1773846059140-5md4o5",
   "status": "completed",
-  "samplesCollected": 4,
-  "durationMs": 45601,
+  "samplesCollected": 10,
+  "durationMs": 100000,
   "stats": [
-    { "name": "CallsActive", "type": "gauge", "min": 0, "max": 0, "avg": 0, "latest": 0 },
-    { "name": "CallsAttempted", "type": "counter", "delta": 0, "rate": 0, "latest": 0 },
-    { "name": "CallsCompleted", "type": "counter", "delta": 0, "rate": 0, "latest": 0 }
+    { "name": "CallsActive", "type": "gauge", "sparkline": "▁▂▃▅▇█▇▅▃▁", "min": 0, "max": 47, "avg": 18.3, "latest": 2 },
+    { "name": "CallsCompleted", "type": "counter", "sparkline": "▁▂▃▄▅▆▆▇▇█", "delta": 238, "rate": 2.38, "latest": 1438 }
   ]
 }
 ```
