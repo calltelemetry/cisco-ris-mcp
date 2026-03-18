@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.0.0...v1.1.0) (2026-03-18)
+
+
+### Features
+
+* fall back to CUCM_DIME_* env vars for credential resolution ([8daea1f](https://github.com/calltelemetry/cisco-ris-mcp/commit/8daea1fee03e78f1fba6eeeef5fb149047be4b74))
+
 # 1.0.0 (2026-03-18)
 
 
