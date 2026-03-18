@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.1.4...v1.1.5) (2026-03-18)
+
+
+### Bug Fixes
+
+* graceful CTI empty state, expanded README use cases ([e62f146](https://github.com/calltelemetry/cisco-ris-mcp/commit/e62f146ec35b312a690979745c4c8cd267f90348))
+
 ## [1.1.4](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.1.3...v1.1.4) (2026-03-18)
 
 
