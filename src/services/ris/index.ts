@@ -2,6 +2,7 @@ import { escapeXml, fetchServiceabilitySoap, toArray } from "../../lib/soap-clie
 import { withRateLimit } from "../../lib/rate-limiter.js";
 import { log } from "../../lib/logger.js";
 import type { CucmCredentials } from "../../types/credentials.js";
+import { CUCM_PORT } from "../../lib/credential-resolver.js";
 import type { RisDevice, RisNode, RisDeviceResult, CtiItem, CtiResult, LineStatus } from "../../types/ris-types.js";
 
 const RIS_PATH = "/realtimeservice2/services/RISService70";
@@ -138,7 +139,7 @@ export async function selectCmDevice(
   const timeout = args.timeoutMs ?? 60_000;
 
   const body = await withRateLimit(creds.host, () =>
-    fetchServiceabilitySoap(creds.host, creds.port, creds, RIS_PATH, "selectCmDevice", envelope, timeout)
+    fetchServiceabilitySoap(creds.host, CUCM_PORT, creds, RIS_PATH, "selectCmDevice", envelope, timeout)
   );
 
   const resp = body.selectCmDeviceResponse as Record<string, unknown> | undefined;
@@ -236,7 +237,7 @@ export async function selectCtiItem(
   const timeout = args.timeoutMs ?? 30_000;
 
   const body = await withRateLimit(creds.host, () =>
-    fetchServiceabilitySoap(creds.host, creds.port, creds, RIS_PATH, "selectCtiItem", envelope, timeout)
+    fetchServiceabilitySoap(creds.host, CUCM_PORT, creds, RIS_PATH, "selectCtiItem", envelope, timeout)
   );
 
   const resp = body.selectCtiItemResponse as Record<string, unknown> | undefined;

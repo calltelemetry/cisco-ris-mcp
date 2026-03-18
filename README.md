@@ -86,16 +86,17 @@ npx @calltelemetry/cisco-ris-mcp
 
 ### Environment Variables
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `CUCM_HOST` | Yes | — | CUCM publisher hostname or IP |
-| `CUCM_USERNAME` | Yes | — | CUCM admin username |
-| `CUCM_PASSWORD` | Yes | — | CUCM admin password |
-| `CUCM_PORT` | No | `8443` | CUCM HTTPS port |
-| `RIS_MCP_LOG_LEVEL` | No | `warn` | Log level: `debug`, `info`, `warn`, `error` |
-| `RIS_MCP_TLS_MODE` | No | `permissive` | Set to `strict` to reject self-signed certs |
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `CUCM_HOST` | Yes | CUCM publisher hostname or IP |
+| `CUCM_USERNAME` | Yes | CUCM admin username |
+| `CUCM_PASSWORD` | Yes | CUCM admin password |
+| `RIS_MCP_LOG_LEVEL` | No | Log level: `debug`, `info`, `warn`, `error` (default: `warn`) |
+| `RIS_MCP_TLS_MODE` | No | Set to `strict` to reject self-signed certs (default: permissive) |
 
-All credentials can also be passed per-tool-call via `cucm_host`, `cucm_username`, `cucm_password`, `cucm_port` parameters — useful for querying multiple clusters in a single session.
+These are the same env vars used by [`@calltelemetry/cisco-axl-mcp`](https://github.com/calltelemetry/cisco-axl-mcp). Set them once in `~/.zshrc` and all CallTelemetry MCP servers use them. Port is always 8443.
+
+Per-tool-call overrides (`cucm_host`, `cucm_username`, `cucm_password`) are available for querying multiple clusters in a single session.
 
 ### Counter Presets
 

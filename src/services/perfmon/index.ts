@@ -2,6 +2,7 @@ import { escapeXml, fetchServiceabilitySoap, toArray } from "../../lib/soap-clie
 import { withRateLimit } from "../../lib/rate-limiter.js";
 import { log } from "../../lib/logger.js";
 import type { CucmCredentials } from "../../types/credentials.js";
+import { CUCM_PORT } from "../../lib/credential-resolver.js";
 import type { PerfmonCounterValue, PerfmonCounterInfo, MonitorJob, TimestampedSample } from "../../types/perfmon-types.js";
 
 const PERFMON_PATH = "/perfmonservice2/services/PerfmonService";
@@ -92,7 +93,7 @@ export async function perfmonCollectCounterData(
   const envelope = buildCollectCounterDataEnvelope(perfmonHost, object);
 
   const body = await withRateLimit(creds.host, () =>
-    fetchServiceabilitySoap(creds.host, creds.port, creds, PERFMON_PATH, "perfmonCollectCounterData", envelope, timeoutMs ?? 30_000)
+    fetchServiceabilitySoap(creds.host, CUCM_PORT, creds, PERFMON_PATH, "perfmonCollectCounterData", envelope, timeoutMs ?? 30_000)
   );
 
   const resp = body.perfmonCollectCounterDataResponse as Record<string, unknown> | undefined;
@@ -114,7 +115,7 @@ export async function perfmonListCounter(
   const envelope = buildListCounterEnvelope(perfmonHost);
 
   const body = await withRateLimit(creds.host, () =>
-    fetchServiceabilitySoap(creds.host, creds.port, creds, PERFMON_PATH, "perfmonListCounter", envelope, timeoutMs ?? 30_000)
+    fetchServiceabilitySoap(creds.host, CUCM_PORT, creds, PERFMON_PATH, "perfmonListCounter", envelope, timeoutMs ?? 30_000)
   );
 
   const resp = body.perfmonListCounterResponse as Record<string, unknown> | undefined;
@@ -143,7 +144,7 @@ export async function perfmonListInstance(
   const envelope = buildListInstanceEnvelope(perfmonHost, object);
 
   const body = await withRateLimit(creds.host, () =>
-    fetchServiceabilitySoap(creds.host, creds.port, creds, PERFMON_PATH, "perfmonListInstance", envelope, timeoutMs ?? 30_000)
+    fetchServiceabilitySoap(creds.host, CUCM_PORT, creds, PERFMON_PATH, "perfmonListInstance", envelope, timeoutMs ?? 30_000)
   );
 
   const resp = body.perfmonListInstanceResponse as Record<string, unknown> | undefined;
@@ -159,7 +160,7 @@ export async function perfmonOpenSession(creds: CucmCredentials, timeoutMs?: num
   const envelope = buildOpenSessionEnvelope();
 
   const body = await withRateLimit(creds.host, () =>
-    fetchServiceabilitySoap(creds.host, creds.port, creds, PERFMON_PATH, "perfmonOpenSession", envelope, timeoutMs ?? 30_000)
+    fetchServiceabilitySoap(creds.host, CUCM_PORT, creds, PERFMON_PATH, "perfmonOpenSession", envelope, timeoutMs ?? 30_000)
   );
 
   const resp = body.perfmonOpenSessionResponse as Record<string, unknown> | undefined;
@@ -176,7 +177,7 @@ export async function perfmonAddCounter(
 ): Promise<void> {
   const envelope = buildAddCounterEnvelope(sessionHandle, counters);
   await withRateLimit(creds.host, () =>
-    fetchServiceabilitySoap(creds.host, creds.port, creds, PERFMON_PATH, "perfmonAddCounter", envelope, timeoutMs ?? 30_000)
+    fetchServiceabilitySoap(creds.host, CUCM_PORT, creds, PERFMON_PATH, "perfmonAddCounter", envelope, timeoutMs ?? 30_000)
   );
 }
 
@@ -188,7 +189,7 @@ export async function perfmonCollectSessionData(
   const envelope = buildCollectSessionDataEnvelope(sessionHandle);
 
   const body = await withRateLimit(creds.host, () =>
-    fetchServiceabilitySoap(creds.host, creds.port, creds, PERFMON_PATH, "perfmonCollectSessionData", envelope, timeoutMs ?? 30_000)
+    fetchServiceabilitySoap(creds.host, CUCM_PORT, creds, PERFMON_PATH, "perfmonCollectSessionData", envelope, timeoutMs ?? 30_000)
   );
 
   const resp = body.perfmonCollectSessionDataResponse as Record<string, unknown> | undefined;
@@ -209,7 +210,7 @@ export async function perfmonCloseSession(
 ): Promise<void> {
   const envelope = buildCloseSessionEnvelope(sessionHandle);
   await withRateLimit(creds.host, () =>
-    fetchServiceabilitySoap(creds.host, creds.port, creds, PERFMON_PATH, "perfmonCloseSession", envelope, timeoutMs ?? 30_000)
+    fetchServiceabilitySoap(creds.host, CUCM_PORT, creds, PERFMON_PATH, "perfmonCloseSession", envelope, timeoutMs ?? 30_000)
   );
 }
 

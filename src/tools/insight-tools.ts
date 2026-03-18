@@ -10,7 +10,6 @@ const credentialProperties = {
   cucm_host: { type: "string", description: "CUCM hostname (overrides CUCM_HOST env)" },
   cucm_username: { type: "string", description: "CUCM username (overrides CUCM_USERNAME env)" },
   cucm_password: { type: "string", description: "CUCM password (overrides CUCM_PASSWORD env)" },
-  cucm_port: { type: "number", description: "CUCM port (default 8443)" },
 };
 
 export const insightTools: ToolDefinition[] = [
