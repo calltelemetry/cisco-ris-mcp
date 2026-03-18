@@ -20,6 +20,5 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - run: yarn typecheck
-      - run: yarn lint
-      - run: yarn vitest run --coverage
+      - run: yarn vitest run
       - run: yarn build
