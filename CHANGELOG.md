@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.1.5...v1.2.0) (2026-03-18)
+
+
+### Features
+
+* parse all RIS device fields from CUCM SOAP response ([4f27034](https://github.com/calltelemetry/cisco-ris-mcp/commit/4f27034a252203f3cfe8c8c6f8fb9a759be6adc9))
+
 ## [1.1.5](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.1.4...v1.1.5) (2026-03-18)
 
 
