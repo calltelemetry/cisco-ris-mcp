@@ -142,7 +142,7 @@ Query device registration by name pattern with full per-device detail.
 { "query": "SEP*" }
 ```
 
-**Output:**
+**Output (all fields from CUCM SOAP response, strongly typed):**
 
 ```json
 {
@@ -155,12 +155,29 @@ Query device registration by name pattern with full per-device detail.
         {
           "name": "SEP0022905C7710",
           "ipAddress": "10.0.0.178",
+          "ipAddrType": "ipv4",
+          "ipAttribute": "AdministrativeAndSignaling",
           "description": "Auto 1000 7975 Phone3",
           "dirNumber": "1000-Registered",
           "status": "Registered",
           "statusReason": 0,
           "protocol": "SCCP",
+          "deviceClass": "Phone",
+          "model": 437,
+          "product": 336,
+          "httpd": "Yes",
+          "registrationAttempts": 1,
+          "isCtiControllable": true,
+          "loginUserId": "",
+          "numOfLines": 1,
+          "linesStatus": [
+            { "directoryNumber": "1000", "status": "Registered" }
+          ],
           "activeLoadId": "SCCP75.9-4-2SR4-3S",
+          "inactiveLoadId": "",
+          "downloadStatus": "Unknown",
+          "downloadFailureReason": "",
+          "downloadServer": "",
           "timeStamp": 1773835197
         }
       ]
