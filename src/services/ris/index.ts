@@ -2,7 +2,7 @@ import { escapeXml, fetchServiceabilitySoap, toArray } from "../../lib/soap-clie
 import { withRateLimit } from "../../lib/rate-limiter.js";
 import { log } from "../../lib/logger.js";
 import type { CucmCredentials } from "../../types/credentials.js";
-import type { RisDevice, RisNode, RisDeviceResult, CtiItem, CtiResult } from "../../types/ris-types.js";
+import type { RisDevice, RisNode, RisDeviceResult, CtiItem, CtiResult, LineStatus } from "../../types/ris-types.js";
 
 const RIS_PATH = "/realtimeservice2/services/RISService70";
 
@@ -61,31 +61,72 @@ function buildSelectCmDeviceEnvelope(args: SelectCmDeviceArgs): string {
   );
 }
 
-function extractIpAddress(raw: unknown): string {
-  if (typeof raw === "string") return raw;
-  if (!raw || typeof raw !== "object") return "";
+interface IpAddressInfo {
+  ip: string;
+  type: string;
+  attribute: string;
+}
+
+function extractIpInfo(raw: unknown): IpAddressInfo {
+  if (typeof raw === "string") return { ip: raw, type: "ipv4", attribute: "" };
+  if (!raw || typeof raw !== "object") return { ip: "", type: "", attribute: "" };
   const obj = raw as Record<string, unknown>;
   const item = obj.item ?? obj.Item;
   if (item) {
     const first = Array.isArray(item) ? item[0] : item;
-    if (first && typeof first === "object") return String((first as Record<string, unknown>).IP ?? "");
-    if (typeof first === "string") return first;
+    if (first && typeof first === "object") {
+      const f = first as Record<string, unknown>;
+      return {
+        ip: String(f.IP ?? ""),
+        type: String(f.IPAddrType ?? "ipv4"),
+        attribute: String(f.Attribute ?? ""),
+      };
+    }
+    if (typeof first === "string") return { ip: first, type: "ipv4", attribute: "" };
   }
-  if (obj.IP) return String(obj.IP);
-  return "";
+  if (obj.IP) return { ip: String(obj.IP), type: String(obj.IPAddrType ?? "ipv4"), attribute: String(obj.Attribute ?? "") };
+  return { ip: "", type: "", attribute: "" };
+}
+
+function parseLinesStatus(raw: unknown): LineStatus[] {
+  if (!raw || typeof raw !== "object") return [];
+  const wrapper = raw as Record<string, unknown>;
+  const items = toArray(wrapper.item ?? wrapper) as Record<string, unknown>[];
+  return items
+    .filter(item => item.DirectoryNumber || item.Status)
+    .map(item => ({
+      directoryNumber: String(item.DirectoryNumber ?? ""),
+      status: String(item.Status ?? ""),
+    }));
 }
 
 function parseDevice(d: Record<string, unknown>): RisDevice {
+  const ipInfo = extractIpInfo(d.IPAddress ?? d.IpAddress ?? "");
   return {
     name: String(d.Name ?? ""),
-    ipAddress: extractIpAddress(d.IPAddress ?? d.IpAddress ?? ""),
+    ipAddress: ipInfo.ip,
+    ipAddrType: ipInfo.type,
+    ipAttribute: ipInfo.attribute,
     description: String(d.Description ?? ""),
     dirNumber: String(d.DirNumber ?? ""),
     status: String(d.Status ?? ""),
     statusReason: Number(d.StatusReason ?? 0),
     protocol: String(d.Protocol ?? ""),
     activeLoadId: String(d.ActiveLoadID ?? d.ActiveLoadId ?? ""),
+    inactiveLoadId: String(d.InactiveLoadID ?? d.InactiveLoadId ?? ""),
+    downloadStatus: String(d.DownloadStatus ?? ""),
+    downloadFailureReason: String(d.DownloadFailureReason ?? ""),
+    downloadServer: String(d.DownloadServer ?? ""),
     timeStamp: Number(d.TimeStamp ?? 0),
+    deviceClass: String(d.DeviceClass ?? ""),
+    model: Number(d.Model ?? 0),
+    product: Number(d.Product ?? 0),
+    httpd: String(d.Httpd ?? ""),
+    registrationAttempts: Number(d.RegistrationAttempts ?? 0),
+    isCtiControllable: d.IsCtiControllable === true || d.IsCtiControllable === "true",
+    loginUserId: String(d.LoginUserId ?? ""),
+    numOfLines: Number(d.NumOfLines ?? 0),
+    linesStatus: parseLinesStatus(d.LinesStatus),
   };
 }
 
