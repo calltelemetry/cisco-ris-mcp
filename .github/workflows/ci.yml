@@ -14,9 +14,11 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
-          node-version: '24'
-      - run: corepack enable
-      - run: yarn install --immutable
+          node-version: '22'
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Install dependencies
+        run: yarn install
       - run: yarn typecheck
       - run: yarn lint
       - run: yarn vitest run --coverage
