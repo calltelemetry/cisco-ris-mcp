@@ -125,7 +125,9 @@ export async function handleCounterTool(name: string, args: Record<string, unkno
     if (name === "counter_snapshot") {
       const { object, counters: filterCounters } = resolvePreset(args);
       const values = await perfmonCollectCounterData(creds, perfmonHost, object, args.timeoutMs as number | undefined);
-      const filtered = filterCounters ? values.filter(v => filterCounters.includes(v.name)) : values;
+      const filtered = filterCounters
+        ? values.filter(v => filterCounters.some(fc => v.name === fc || v.name.endsWith(`\\${fc}`)))
+        : values;
       return jsonResponse({ object, host: perfmonHost, counters: filtered });
     }
 

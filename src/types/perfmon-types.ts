@@ -72,9 +72,16 @@ export const COUNTER_PRESETS: Record<string, { object: string; counters?: string
   system: { object: "Processor" },
 };
 
+/** Extract bare counter name from full PerfMon path (e.g., \\\\host\\Object\\Counter → Counter) */
+export function bareCounterName(name: string): string {
+  const lastSlash = name.lastIndexOf("\\");
+  return lastSlash >= 0 ? name.slice(lastSlash + 1) : name;
+}
+
 export function classifyCounter(name: string): CounterType {
-  if (GAUGE_COUNTERS.has(name)) return "gauge";
-  if (MONOTONIC_COUNTERS.has(name)) return "counter";
+  const bare = bareCounterName(name);
+  if (GAUGE_COUNTERS.has(bare)) return "gauge";
+  if (MONOTONIC_COUNTERS.has(bare)) return "counter";
   return "unknown";
 }
 
