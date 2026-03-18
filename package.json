@@ -1,6 +1,6 @@
 {
   "name": "@calltelemetry/cisco-ris-mcp",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "MCP server for Cisco CUCM RIS (Real-time Information Service) and PerfMon APIs",
   "type": "module",
   "main": "build/index.js",

@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.1.3...v1.1.4) (2026-03-18)
+
+
+### Bug Fixes
+
+* retain completed monitors for 30min, update README with live test results ([870b029](https://github.com/calltelemetry/cisco-ris-mcp/commit/870b029f250b446172cc74099a30a8969c566841))
+
 ## [1.1.3](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.1.2...v1.1.3) (2026-03-18)
 
 
