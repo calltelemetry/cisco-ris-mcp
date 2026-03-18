@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.1.1...v1.1.2) (2026-03-18)
+
+
+### Bug Fixes
+
+* replace UnregisteredPhoneCount with PartiallyRegisteredPhone in registration preset ([7d0af91](https://github.com/calltelemetry/cisco-ris-mcp/commit/7d0af91b4c7f23bc665fc1ee2325ac63861653f1))
+
 ## [1.1.1](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.1.0...v1.1.1) (2026-03-18)
 
 
