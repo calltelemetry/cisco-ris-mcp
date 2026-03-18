@@ -10,10 +10,6 @@ describe("resolveCredentials", () => {
     delete process.env.CUCM_USERNAME;
     delete process.env.CUCM_PASSWORD;
     delete process.env.CUCM_PORT;
-    delete process.env.CUCM_DIME_HOST;
-    delete process.env.CUCM_DIME_USERNAME;
-    delete process.env.CUCM_DIME_PASSWORD;
-    delete process.env.CUCM_DIME_PORT;
   });
 
   afterEach(() => {
@@ -47,17 +43,6 @@ describe("resolveCredentials", () => {
     expect(creds.username).toBe("override-user");
     expect(creds.password).toBe("override-pass");
     expect(creds.port).toBe(9443);
-  });
-
-  it("falls back to CUCM_DIME_* env vars", () => {
-    process.env.CUCM_DIME_HOST = "dime-host";
-    process.env.CUCM_DIME_USERNAME = "dime-user";
-    process.env.CUCM_DIME_PASSWORD = "dime-pass";
-
-    const creds = resolveCredentials();
-    expect(creds.host).toBe("dime-host");
-    expect(creds.username).toBe("dime-user");
-    expect(creds.password).toBe("dime-pass");
   });
 
   it("throws with helpful message when host is missing", () => {
@@ -101,13 +86,4 @@ describe("resolveCredentials", () => {
     expect(creds.port).toBe(9999);
   });
 
-  it("CUCM_DIME_PORT env is used as fallback", () => {
-    process.env.CUCM_HOST = "host";
-    process.env.CUCM_USERNAME = "admin";
-    process.env.CUCM_PASSWORD = "secret";
-    process.env.CUCM_DIME_PORT = "7777";
-
-    const creds = resolveCredentials();
-    expect(creds.port).toBe(7777);
-  });
 });
