@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.1.0...v1.1.1) (2026-03-18)
+
+
+### Bug Fixes
+
+* match counter names by suffix for preset filtering ([ae2257d](https://github.com/calltelemetry/cisco-ris-mcp/commit/ae2257d7a4c1dc76cf35fcefad92f9caade13f5e))
+
 # [1.1.0](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.0.0...v1.1.0) (2026-03-18)
 
 
