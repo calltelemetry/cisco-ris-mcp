@@ -11,9 +11,32 @@ An [MCP](https://modelcontextprotocol.io/) server that gives AI assistants direc
 
 **You ask about your cluster in plain language. The LLM queries RIS and PerfMon for you.**
 
-- *"Are all phones registered?"*
+### Troubleshooting & Triage
+- *"Are all phones registered? Which ones aren't?"*
+- *"Find all phones on subnet 10.1.5.x — are any unregistered?"*
+- *"Is SEP001122334455 registered? What node is it on? What's its IP?"*
+- *"Show me all rejected phones and their rejection reasons"*
+- *"Which CUCM node has the most unregistered devices?"*
+
+### Capacity & Performance
 - *"Show me call volume over the last 5 minutes"*
+- *"How many MTP and transcoder resources are available?"*
+- *"Are we running low on conference bridge resources?"*
+- *"What's the CPU utilization on the publisher?"*
+- *"Monitor SIP trunk call activity for the next 2 minutes"*
+
+### Health & Situational Awareness
 - *"Is the cluster healthy?"*
+- *"Give me a registration breakdown by protocol — how many SIP vs SCCP?"*
+- *"How many Jabber clients are connected via MRA?"*
+- *"Are any CTI applications connected? What's their status?"*
+- *"Compare registration counts to what CUCM thinks is registered via PerfMon"*
+
+### Inventory & Reporting
+- *"How many phones are registered by model/firmware?"*
+- *"List all registered hardware phones and their IPs"*
+- *"What PerfMon counters are available on this cluster?"*
+- *"Show me all instances of Cisco SIP trunk counters"*
 
 ## Installation
 
