@@ -65,7 +65,7 @@ Presets select a curated set of counters for common monitoring scenarios:
 
 | Preset | PerfMon Object | Counters |
 |--------|----------------|----------|
-| `registration` | Cisco CallManager | RegisteredHardwarePhones, RegisteredOtherStationDevices, UnregisteredPhoneCount |
+| `registration` | Cisco CallManager | RegisteredHardwarePhones, RegisteredOtherStationDevices, PartiallyRegisteredPhone |
 | `call_processing` | Cisco CallManager | CallsActive, CallsAttempted, CallsCompleted |
 | `sip` | Cisco SIP | All SIP stack counters (INVITE, BYE, REGISTER, etc.) |
 | `media` | Cisco CallManager | VideoCallsActive, VideoCallsCompleted |
@@ -116,7 +116,7 @@ Query device registration by name pattern with full per-device detail.
 **Input:**
 
 ```json
-{ "search": "SEP*" }
+{ "query": "SEP*" }
 ```
 
 **Output:**
@@ -204,7 +204,7 @@ Read PerfMon counters using a preset or custom object/counter list.
   "counters": [
     { "name": "RegisteredHardwarePhones", "value": 1, "cStatus": 1 },
     { "name": "RegisteredOtherStationDevices", "value": 0, "cStatus": 1 },
-    { "name": "UnregisteredPhoneCount", "value": 0, "cStatus": 1 }
+    { "name": "PartiallyRegisteredPhone", "value": 0, "cStatus": 1 }
   ]
 }
 ```
@@ -265,6 +265,27 @@ List all PerfMon objects and their counters on the cluster.
 
 ---
 
+### `counter_instances` — List multi-instance object entries
+
+Discover which devices, lines, or resources exist as instances of a PerfMon object.
+
+**Input:**
+
+```json
+{ "object": "Cisco Phones" }
+```
+
+**Output:**
+
+```json
+{
+  "object": "Cisco Phones",
+  "instances": ["SEP0022905C7710"]
+}
+```
+
+---
+
 ### `counter_monitor_start` — Background monitoring
 
 Start continuous counter collection at a configurable interval. Returns a `monitorId` for retrieving results.
@@ -298,42 +319,81 @@ Start continuous counter collection at a configurable interval. Returns a `monit
 
 ### `counter_monitor_results` — Read accumulated statistics
 
-Retrieve samples from a running monitor with computed min/max/avg/delta/rate per counter.
+Retrieve samples from a running or completed monitor with computed statistics per counter.
 
 **Input:**
 
 ```json
-{ "monitorId": "mon-1710756000-abc123" }
+{ "monitorId": "mon-1773846059140-5md4o5" }
+```
+
+**Output (from live CUCM 15 cluster, 4 samples over 40 seconds):**
+
+```json
+{
+  "monitorId": "mon-1773846059140-5md4o5",
+  "status": "running",
+  "samplesCollected": 4,
+  "maxSamples": 10,
+  "durationMs": 40433,
+  "stats": [
+    {
+      "name": "CallsActive",
+      "type": "gauge",
+      "min": 0, "max": 0, "avg": 0,
+      "delta": 0, "rate": 0, "latest": 0,
+      "timestamps": [1773846073224, 1773846083220, 1773846093271, 1773846103221]
+    },
+    {
+      "name": "CallsAttempted",
+      "type": "counter",
+      "min": 0, "max": 0, "avg": 0,
+      "delta": 0, "rate": 0, "latest": 0,
+      "timestamps": [1773846073224, 1773846083220, 1773846093271, 1773846103221]
+    },
+    {
+      "name": "CallsCompleted",
+      "type": "counter",
+      "min": 0, "max": 0, "avg": 0,
+      "delta": 0, "rate": 0, "latest": 0,
+      "timestamps": [1773846073224, 1773846083220, 1773846093271, 1773846103221]
+    }
+  ]
+}
+```
+
+Statistics use **actual timestamps** (not assumed intervals) for rate calculation. Counters are classified as:
+- **gauge** (CallsActive, RegisteredHardwarePhones) — min/max/avg are meaningful
+- **counter** (CallsCompleted, CallsAttempted) — delta and rate (per second) are meaningful
+
+Results remain available for 30 minutes after a monitor completes or is stopped.
+
+---
+
+### `counter_monitor_stop` — Stop and finalize
+
+Stops a running monitor, closes the PerfMon session on CUCM, and returns final statistics.
+
+**Input:**
+
+```json
+{ "monitorId": "mon-1773846059140-5md4o5" }
 ```
 
 **Output:**
 
 ```json
 {
-  "monitorId": "mon-1710756000-abc123",
-  "status": "running",
-  "samplesCollected": 3,
-  "maxSamples": 100,
-  "durationMs": 30000,
+  "monitorId": "mon-1773846059140-5md4o5",
+  "status": "completed",
+  "samplesCollected": 4,
+  "durationMs": 45601,
   "stats": [
-    { "name": "CallsActive", "type": "gauge", "min": 0, "max": 2, "avg": 0.67, "delta": 0, "rate": 0, "latest": 0 },
-    { "name": "CallsCompleted", "type": "counter", "min": 1234, "max": 1236, "avg": 1235, "delta": 2, "rate": 0.067, "latest": 1236 }
+    { "name": "CallsActive", "type": "gauge", "min": 0, "max": 0, "avg": 0, "latest": 0 },
+    { "name": "CallsAttempted", "type": "counter", "delta": 0, "rate": 0, "latest": 0 },
+    { "name": "CallsCompleted", "type": "counter", "delta": 0, "rate": 0, "latest": 0 }
   ]
 }
-```
-
-Statistics distinguish between **gauge** counters (point-in-time values like CallsActive) and **counter** types (monotonically increasing values like CallsCompleted) with delta and rate calculations.
-
----
-
-### `counter_monitor_stop` — Stop and finalize
-
-Stops a running monitor and returns final statistics.
-
-**Input:**
-
-```json
-{ "monitorId": "mon-1710756000-abc123" }
 ```
 
 ---

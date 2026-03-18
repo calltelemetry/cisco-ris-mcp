@@ -216,6 +216,9 @@ export async function perfmonCloseSession(
 // -- Background Monitor Manager --
 
 const activeMonitors = new Map<string, { job: MonitorJob; timer: ReturnType<typeof setInterval>; creds: CucmCredentials }>();
+/** Completed/stopped monitors kept for 30 minutes so results can still be read */
+const completedMonitors = new Map<string, MonitorJob>();
+const COMPLETED_TTL_MS = 30 * 60 * 1000;
 
 export function getActiveMonitors(): Map<string, MonitorJob> {
   const result = new Map<string, MonitorJob>();
@@ -303,11 +306,13 @@ export async function stopMonitor(monitorId: string): Promise<MonitorJob | null>
   }
 
   activeMonitors.delete(monitorId);
+  completedMonitors.set(monitorId, entry.job);
+  setTimeout(() => completedMonitors.delete(monitorId), COMPLETED_TTL_MS);
   return entry.job;
 }
 
 export function getMonitorJob(monitorId: string): MonitorJob | null {
-  return activeMonitors.get(monitorId)?.job ?? null;
+  return activeMonitors.get(monitorId)?.job ?? completedMonitors.get(monitorId) ?? null;
 }
 
 /** Cleanup all active monitors -- called on process shutdown */
