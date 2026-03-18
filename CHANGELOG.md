@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.2.0...v1.3.0) (2026-03-18)
+
+
+### Features
+
+* comprehensive tests (20 cases), README with full device fields ([d7d564f](https://github.com/calltelemetry/cisco-ris-mcp/commit/d7d564fbb1b2e4fabd40e12b2179d4c3a718b94a))
+
 # [1.2.0](https://github.com/calltelemetry/cisco-ris-mcp/compare/v1.1.5...v1.2.0) (2026-03-18)
 
 
