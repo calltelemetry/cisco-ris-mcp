@@ -4,6 +4,7 @@ MCP server for Cisco CUCM Real-time Information Service (RIS) and PerfMon SOAP A
 
 [![npm](https://img.shields.io/npm/v/@calltelemetry/cisco-ris-mcp)](https://www.npmjs.com/package/@calltelemetry/cisco-ris-mcp)
 [![CI](https://github.com/calltelemetry/cisco-ris-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/calltelemetry/cisco-ris-mcp/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/calltelemetry/cisco-ris-mcp/graph/badge.svg)](https://codecov.io/gh/calltelemetry/cisco-ris-mcp)
 
 Built by [Call Telemetry](https://calltelemetry.com) — realtime tools for Cisco Collaboration.
 

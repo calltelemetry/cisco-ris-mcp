@@ -20,5 +20,10 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - run: yarn typecheck
-      - run: yarn vitest run
+      - run: yarn vitest run --coverage
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - run: yarn build
