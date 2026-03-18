@@ -51,7 +51,7 @@ export const GAUGE_COUNTERS = new Set([
   "CallsActive",
   "RegisteredHardwarePhones",
   "RegisteredOtherStationDevices",
-  "UnregisteredPhoneCount",
+  "InitializationState",
   "PartiallyRegisteredPhone",
   "RegisteredAnalogAccess",
   "RegisteredMGCPGateway",
@@ -66,7 +66,7 @@ export const MONOTONIC_COUNTERS = new Set([
 
 export const COUNTER_PRESETS: Record<string, { object: string; counters?: string[] }> = {
   call_processing: { object: "Cisco CallManager", counters: ["CallsActive", "CallsAttempted", "CallsCompleted"] },
-  registration: { object: "Cisco CallManager", counters: ["RegisteredHardwarePhones", "RegisteredOtherStationDevices", "UnregisteredPhoneCount"] },
+  registration: { object: "Cisco CallManager", counters: ["RegisteredHardwarePhones", "RegisteredOtherStationDevices", "PartiallyRegisteredPhone"] },
   sip: { object: "Cisco SIP" },
   media: { object: "Cisco CallManager", counters: ["VideoCallsActive", "VideoCallsCompleted"] },
   system: { object: "Processor" },
