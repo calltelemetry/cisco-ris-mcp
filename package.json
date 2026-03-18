@@ -25,7 +25,8 @@
     "test": "vitest run",
     "test:mcp": "vitest run test/mcp-conformance.test.ts",
     "validate": "yarn typecheck && yarn lint && yarn test",
-    "prepack": "yarn build && yarn test:mcp"
+    "prepack": "yarn build && yarn test:mcp",
+    "semantic-release": "semantic-release"
   },
   "keywords": [
     "mcp",

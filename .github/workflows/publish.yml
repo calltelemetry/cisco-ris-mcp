@@ -23,7 +23,7 @@ jobs:
       - run: yarn typecheck
       - run: yarn test
       - run: yarn build
-      - run: npx semantic-release
+      - run: yarn run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
