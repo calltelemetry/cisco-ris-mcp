@@ -9,6 +9,7 @@ const credentialProperties = {
   cucm_host: { type: "string", description: "CUCM hostname (overrides CUCM_HOST env)" },
   cucm_username: { type: "string", description: "CUCM username (overrides CUCM_USERNAME env)" },
   cucm_password: { type: "string", description: "CUCM password (overrides CUCM_PASSWORD env)" },
+  cucm_port: { type: "number", description: "CUCM port (default 8443)" },
 };
 
 export const deviceTools: ToolDefinition[] = [
@@ -155,24 +156,15 @@ export async function handleDeviceTool(name: string, args: Record<string, unknow
     }
 
     if (name === "cti_status") {
-      try {
-        const result = await selectCtiItem(creds, {
-          ctiMgrClass: args.ctiMgrClass as string | undefined,
-          maxItems: args.maxItems as number | undefined,
-          appId: args.appId as string | undefined,
-          nodeName: args.nodeName as string | undefined,
-          status: args.status as string | undefined,
-          timeoutMs: args.timeoutMs as number | undefined,
-        });
-        return jsonResponse(result);
-      } catch (ctiErr) {
-        // CUCM returns SOAP 500 "unknown" when no CTI apps are connected — not a real error
-        const msg = ctiErr instanceof Error ? ctiErr.message : String(ctiErr);
-        if (/500.*unknown|unknown.*500/i.test(msg)) {
-          return jsonResponse({ totalItemsFound: 0, items: [], note: "No CTI applications connected to cluster. Start a JTAPI/TAPI provider to see CTI status." });
-        }
-        throw ctiErr;
-      }
+      const result = await selectCtiItem(creds, {
+        ctiMgrClass: args.ctiMgrClass as string | undefined,
+        maxItems: args.maxItems as number | undefined,
+        appId: args.appId as string | undefined,
+        nodeName: args.nodeName as string | undefined,
+        status: args.status as string | undefined,
+        timeoutMs: args.timeoutMs as number | undefined,
+      });
+      return jsonResponse(result);
     }
 
     return { content: [{ type: "text", text: `Unknown device tool: ${name}` }], isError: true };

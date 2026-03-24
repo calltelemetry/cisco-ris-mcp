@@ -38,7 +38,6 @@ export interface CounterStats {
   type: CounterType;
   values: number[];
   timestamps: number[];
-  sparkline: string;
   min: number;
   max: number;
   avg: number;
@@ -47,27 +46,12 @@ export interface CounterStats {
   latest: number;
 }
 
-const SPARK_CHARS = "▁▂▃▄▅▆▇█";
-
-/** Generate a Unicode sparkline from numeric values */
-export function sparkline(values: number[]): string {
-  if (values.length === 0) return "";
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min;
-  if (range === 0) return SPARK_CHARS[0]!.repeat(values.length);
-  return values.map(v => {
-    const idx = Math.round(((v - min) / range) * (SPARK_CHARS.length - 1));
-    return SPARK_CHARS[idx];
-  }).join("");
-}
-
 /** Known counter classifications for presets */
 export const GAUGE_COUNTERS = new Set([
   "CallsActive",
   "RegisteredHardwarePhones",
   "RegisteredOtherStationDevices",
-  "InitializationState",
+  "UnregisteredPhoneCount",
   "PartiallyRegisteredPhone",
   "RegisteredAnalogAccess",
   "RegisteredMGCPGateway",
@@ -82,22 +66,15 @@ export const MONOTONIC_COUNTERS = new Set([
 
 export const COUNTER_PRESETS: Record<string, { object: string; counters?: string[] }> = {
   call_processing: { object: "Cisco CallManager", counters: ["CallsActive", "CallsAttempted", "CallsCompleted"] },
-  registration: { object: "Cisco CallManager", counters: ["RegisteredHardwarePhones", "RegisteredOtherStationDevices", "PartiallyRegisteredPhone"] },
+  registration: { object: "Cisco CallManager", counters: ["RegisteredHardwarePhones", "RegisteredOtherStationDevices", "UnregisteredPhoneCount"] },
   sip: { object: "Cisco SIP" },
   media: { object: "Cisco CallManager", counters: ["VideoCallsActive", "VideoCallsCompleted"] },
   system: { object: "Processor" },
 };
 
-/** Extract bare counter name from full PerfMon path (e.g., \\\\host\\Object\\Counter → Counter) */
-export function bareCounterName(name: string): string {
-  const lastSlash = name.lastIndexOf("\\");
-  return lastSlash >= 0 ? name.slice(lastSlash + 1) : name;
-}
-
 export function classifyCounter(name: string): CounterType {
-  const bare = bareCounterName(name);
-  if (GAUGE_COUNTERS.has(bare)) return "gauge";
-  if (MONOTONIC_COUNTERS.has(bare)) return "counter";
+  if (GAUGE_COUNTERS.has(name)) return "gauge";
+  if (MONOTONIC_COUNTERS.has(name)) return "counter";
   return "unknown";
 }
 
@@ -115,7 +92,7 @@ export function computeStats(samples: TimestampedSample[], counterName: string):
   }
 
   if (values.length === 0) {
-    return { name: counterName, type, values: [], timestamps: [], sparkline: "", min: 0, max: 0, avg: 0, delta: 0, rate: 0, latest: 0 };
+    return { name: counterName, type, values: [], timestamps: [], min: 0, max: 0, avg: 0, delta: 0, rate: 0, latest: 0 };
   }
 
   const min = Math.min(...values);
@@ -126,5 +103,5 @@ export function computeStats(samples: TimestampedSample[], counterName: string):
   const rate = durationSec > 0 ? delta / durationSec : 0;
   const latest = values[values.length - 1]!;
 
-  return { name: counterName, type, values, timestamps, sparkline: sparkline(values), min, max, avg, delta, rate, latest };
+  return { name: counterName, type, values, timestamps, min, max, avg, delta, rate, latest };
 }

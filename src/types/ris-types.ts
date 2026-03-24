@@ -1,33 +1,13 @@
-export interface LineStatus {
-  directoryNumber: string;
-  status: string;
-}
-
 export interface RisDevice {
   name: string;
   ipAddress: string;
-  ipAddrType: string;
-  ipAttribute: string;
   description: string;
   dirNumber: string;
   status: string;
   statusReason: number;
   protocol: string;
   activeLoadId: string;
-  inactiveLoadId: string;
-  downloadStatus: string;
-  downloadFailureReason: string;
-  downloadServer: string;
   timeStamp: number;
-  deviceClass: string;
-  model: number;
-  product: number;
-  httpd: string;
-  registrationAttempts: number;
-  isCtiControllable: boolean;
-  loginUserId: string;
-  numOfLines: number;
-  linesStatus: LineStatus[];
 }
 
 export interface RisNode {

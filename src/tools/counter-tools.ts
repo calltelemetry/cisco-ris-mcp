@@ -16,6 +16,7 @@ const credentialProperties = {
   cucm_host: { type: "string", description: "CUCM hostname (overrides CUCM_HOST env)" },
   cucm_username: { type: "string", description: "CUCM username (overrides CUCM_USERNAME env)" },
   cucm_password: { type: "string", description: "CUCM password (overrides CUCM_PASSWORD env)" },
+  cucm_port: { type: "number", description: "CUCM port (default 8443)" },
 };
 
 export const counterTools: ToolDefinition[] = [
@@ -118,57 +119,13 @@ function resolvePreset(args: Record<string, unknown>): { object: string; counter
 
 export async function handleCounterTool(name: string, args: Record<string, unknown>): Promise<ToolResult> {
   try {
-    // counter_monitor_results and counter_monitor_stop don't need credentials
-    if (name === "counter_monitor_results") {
-      const monitorId = args.monitorId as string;
-      const job = getMonitorJob(monitorId);
-      if (!job) return { content: [{ type: "text", text: `Monitor ${monitorId} not found` }], isError: true };
-
-      const allCounterNames = new Set<string>();
-      for (const sample of job.samples) {
-        for (const c of sample.counters) allCounterNames.add(c.name);
-      }
-      const stats = Array.from(allCounterNames).map(name => computeStats(job.samples, name));
-
-      return jsonResponse({
-        monitorId: job.monitorId,
-        status: job.status,
-        samplesCollected: job.samples.length,
-        maxSamples: job.maxSamples,
-        durationMs: (job.stoppedAt ?? Date.now()) - job.startedAt,
-        stats,
-      });
-    }
-
-    if (name === "counter_monitor_stop") {
-      const monitorId = args.monitorId as string;
-      const job = await stopMonitor(monitorId);
-      if (!job) return { content: [{ type: "text", text: `Monitor ${monitorId} not found` }], isError: true };
-
-      const allCounterNames = new Set<string>();
-      for (const sample of job.samples) {
-        for (const c of sample.counters) allCounterNames.add(c.name);
-      }
-      const stats = Array.from(allCounterNames).map(name => computeStats(job.samples, name));
-
-      return jsonResponse({
-        monitorId: job.monitorId,
-        status: job.status,
-        samplesCollected: job.samples.length,
-        durationMs: (job.stoppedAt ?? Date.now()) - job.startedAt,
-        stats,
-      });
-    }
-
     const creds = resolveCredentials(args);
     const perfmonHost = (args.perfmonHost as string) || creds.host;
 
     if (name === "counter_snapshot") {
       const { object, counters: filterCounters } = resolvePreset(args);
       const values = await perfmonCollectCounterData(creds, perfmonHost, object, args.timeoutMs as number | undefined);
-      const filtered = filterCounters
-        ? values.filter(v => filterCounters.some(fc => v.name === fc || v.name.endsWith(`\\${fc}`)))
-        : values;
+      const filtered = filterCounters ? values.filter(v => filterCounters.includes(v.name)) : values;
       return jsonResponse({ object, host: perfmonHost, counters: filtered });
     }
 
@@ -204,6 +161,48 @@ export async function handleCounterTool(name: string, args: Record<string, unkno
         intervalMs,
         maxSamples,
         message: "Monitor started. Use counter_monitor_results to read samples, counter_monitor_stop to end.",
+      });
+    }
+
+    if (name === "counter_monitor_results") {
+      const monitorId = args.monitorId as string;
+      const job = getMonitorJob(monitorId);
+      if (!job) return { content: [{ type: "text", text: `Monitor ${monitorId} not found` }], isError: true };
+
+      const allCounterNames = new Set<string>();
+      for (const sample of job.samples) {
+        for (const c of sample.counters) allCounterNames.add(c.name);
+      }
+
+      const stats = Array.from(allCounterNames).map(name => computeStats(job.samples, name));
+
+      return jsonResponse({
+        monitorId: job.monitorId,
+        status: job.status,
+        samplesCollected: job.samples.length,
+        maxSamples: job.maxSamples,
+        durationMs: (job.stoppedAt ?? Date.now()) - job.startedAt,
+        stats,
+      });
+    }
+
+    if (name === "counter_monitor_stop") {
+      const monitorId = args.monitorId as string;
+      const job = await stopMonitor(monitorId);
+      if (!job) return { content: [{ type: "text", text: `Monitor ${monitorId} not found` }], isError: true };
+
+      const allCounterNames = new Set<string>();
+      for (const sample of job.samples) {
+        for (const c of sample.counters) allCounterNames.add(c.name);
+      }
+      const stats = Array.from(allCounterNames).map(name => computeStats(job.samples, name));
+
+      return jsonResponse({
+        monitorId: job.monitorId,
+        status: job.status,
+        samplesCollected: job.samples.length,
+        durationMs: (job.stoppedAt ?? Date.now()) - job.startedAt,
+        stats,
       });
     }
 
