@@ -22,7 +22,24 @@ jobs:
       - run: yarn typecheck
       - run: yarn test
       - run: yarn build
+      - name: Mint release-automation App token
+        id: release_token
+        # No PAT fallback (ADR 0511 / REL-561): a missing or misconfigured
+        # App secret fails this job loudly instead of silently degrading.
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          owner: calltelemetry
+          repositories: cisco-ris-mcp
+      - name: Confirm the release-automation credential is provisioned
+        run: |
+          set -euo pipefail
+          if [ -z "${{ steps.release_token.outputs.token }}" ]; then
+            echo "::error::ct-release-automation App token was not minted; RELEASE_APP_ID / RELEASE_APP_PRIVATE_KEY must be provisioned. There is no PAT fallback (ADR 0511)."
+            exit 1
+          fi
       - run: yarn run semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.release_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
