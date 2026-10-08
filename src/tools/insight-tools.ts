@@ -43,14 +43,18 @@ export const insightTools: ToolDefinition[] = [
   },
 ];
 
-export async function handleInsightTool(name: string, args: Record<string, unknown>): Promise<ToolResult> {
+export async function handleInsightTool(
+  name: string,
+  args: Record<string, unknown>,
+  env?: Record<string, string | undefined>
+): Promise<ToolResult> {
   try {
-    const creds = resolveCredentials(args);
+    const creds = resolveCredentials(args, env);
 
     if (name === "phone_summary") {
       // This delegates to device_status with summaryOnly, but is a separate tool for discoverability
       const { handleDeviceTool } = await import("./device-tools.js");
-      return handleDeviceTool("device_status", { ...args, summaryOnly: true });
+      return handleDeviceTool("device_status", { ...args, summaryOnly: true }, env);
     }
 
     if (name === "registration_health") {

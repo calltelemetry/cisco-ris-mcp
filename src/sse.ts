@@ -15,6 +15,8 @@ import { createMcpServer, SERVER_NAME, SERVER_VERSION } from "./server.js";
 import { cleanupAllMonitors } from "./services/perfmon/index.js";
 import { log } from "./lib/logger.js";
 
+import { handleMcpFetchRequest } from "./fetch.js";
+
 const DEFAULT_PORT = parseInt(process.env.PORT || "8010", 10);
 const DEFAULT_HOST = process.env.HOST || "0.0.0.0";
 
@@ -36,7 +38,7 @@ export async function startSseServer(options: SseServerOptions = {}): Promise<ht
       // CORS headers
       res.setHeader("Access-Control-Allow-Origin", "*");
       res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, x-session-id");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, x-session-id, Mcp-Method, Mcp-Name, MCP-Protocol-Version, x-ct-agent");
 
       if (req.method === "OPTIONS") {
         res.writeHead(204);
@@ -51,10 +53,33 @@ export async function startSseServer(options: SseServerOptions = {}): Promise<ht
             status: "ok",
             service: SERVER_NAME,
             version: SERVER_VERSION,
-            transport: "sse",
+            transport: "sse-and-http",
             uptime: process.uptime(),
           })
         );
+        return;
+      }
+
+      // Streamable HTTP JSON-RPC endpoint (/mcp, /cucm_ris/mcp)
+      if (url.pathname === "/mcp" || url.pathname === "/cucm_ris/mcp") {
+        const chunks: Buffer[] = [];
+        for await (const chunk of req) {
+          chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+        }
+        const bodyBuffer = Buffer.concat(chunks);
+        const headers = new Headers();
+        for (const [k, v] of Object.entries(req.headers)) {
+          if (v) headers.set(k, Array.isArray(v) ? v.join(", ") : v);
+        }
+        const webReq = new Request(url.toString(), {
+          method: req.method,
+          headers,
+          body: req.method !== "GET" && req.method !== "HEAD" ? bodyBuffer : undefined,
+        });
+        const webRes = await handleMcpFetchRequest(webReq);
+        res.writeHead(webRes.status, Object.fromEntries(webRes.headers.entries()));
+        const resBody = await webRes.arrayBuffer();
+        res.end(Buffer.from(resBody));
         return;
       }
 

@@ -8,6 +8,9 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, 'src/index.ts'),
         sse: resolve(__dirname, 'src/sse.ts'),
+        fetch: resolve(__dirname, 'src/fetch.ts'),
+        server: resolve(__dirname, 'src/server.ts'),
+        tools: resolve(__dirname, 'src/tools/index.ts'),
       },
       formats: ['es'],
     },

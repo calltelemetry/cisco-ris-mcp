@@ -117,9 +117,13 @@ function resolvePreset(args: Record<string, unknown>): { object: string; counter
   return { object, counters };
 }
 
-export async function handleCounterTool(name: string, args: Record<string, unknown>): Promise<ToolResult> {
+export async function handleCounterTool(
+  name: string,
+  args: Record<string, unknown>,
+  env?: Record<string, string | undefined>
+): Promise<ToolResult> {
   try {
-    const creds = resolveCredentials(args);
+    const creds = resolveCredentials(args, env);
     const perfmonHost = (args.perfmonHost as string) || creds.host;
 
     if (name === "counter_snapshot") {
