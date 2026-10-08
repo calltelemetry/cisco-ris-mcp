@@ -11,9 +11,13 @@ export function getTools(): ToolDefinition[] {
   return [...deviceTools, ...counterTools, ...insightTools];
 }
 
-export async function handleTool(name: string, args: Record<string, unknown>): Promise<ToolResult> {
-  if (deviceToolNames.has(name)) return handleDeviceTool(name, args);
-  if (counterToolNames.has(name)) return handleCounterTool(name, args);
-  if (insightToolNames.has(name)) return handleInsightTool(name, args);
+export async function handleTool(
+  name: string,
+  args: Record<string, unknown>,
+  env?: Record<string, string | undefined>
+): Promise<ToolResult> {
+  if (deviceToolNames.has(name)) return handleDeviceTool(name, args, env);
+  if (counterToolNames.has(name)) return handleCounterTool(name, args, env);
+  if (insightToolNames.has(name)) return handleInsightTool(name, args, env);
   return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
 }

@@ -5,6 +5,13 @@
   "type": "module",
   "main": "build/index.js",
   "bin": "build/index.js",
+  "exports": {
+    ".": "./build/index.js",
+    "./server": "./build/server.js",
+    "./tools": "./build/tools.js",
+    "./sse": "./build/sse.js",
+    "./fetch": "./build/fetch.js"
+  },
   "files": [
     "build/**/*"
   ],

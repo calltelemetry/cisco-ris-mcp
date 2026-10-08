@@ -136,9 +136,13 @@ function buildSummary(result: Awaited<ReturnType<typeof selectCmDeviceAll>>): Ph
   };
 }
 
-export async function handleDeviceTool(name: string, args: Record<string, unknown>): Promise<ToolResult> {
+export async function handleDeviceTool(
+  name: string,
+  args: Record<string, unknown>,
+  env?: Record<string, string | undefined>
+): Promise<ToolResult> {
   try {
-    const creds = resolveCredentials(args);
+    const creds = resolveCredentials(args, env);
 
     if (name === "device_status") {
       const result = await getCachedDeviceStatus(creds, args);
