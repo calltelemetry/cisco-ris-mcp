@@ -5,12 +5,28 @@
   "type": "module",
   "main": "build/index.js",
   "bin": "build/index.js",
+  "types": "build/index.d.ts",
   "exports": {
-    ".": "./build/index.js",
-    "./server": "./build/server.js",
-    "./tools": "./build/tools.js",
-    "./sse": "./build/sse.js",
-    "./fetch": "./build/fetch.js"
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./server": {
+      "types": "./build/server.d.ts",
+      "default": "./build/server.js"
+    },
+    "./tools": {
+      "types": "./build/tools/index.d.ts",
+      "default": "./build/tools.js"
+    },
+    "./sse": {
+      "types": "./build/sse.d.ts",
+      "default": "./build/sse.js"
+    },
+    "./fetch": {
+      "types": "./build/fetch.d.ts",
+      "default": "./build/fetch.js"
+    }
   },
   "files": [
     "build/**/*"
@@ -23,7 +39,7 @@
   },
   "packageManager": "yarn@4.12.0",
   "scripts": {
-    "build": "vite build && chmod +x build/index.js build/sse.js",
+    "build": "vite build && tsc --emitDeclarationOnly && chmod +x build/index.js build/sse.js",
     "start": "node build/index.js",
     "start:sse": "node build/sse.js",
     "dev": "vite build --watch",
