@@ -104,3 +104,5 @@ yarn validate       # typecheck + lint + test
 ## License
 
 MIT
+
+<!-- merge-queue canary 2026-10-25 -->
