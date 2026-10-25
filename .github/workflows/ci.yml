@@ -1,12 +1,14 @@
 name: CI
 on:
+  merge_group:
+    types: [checks_requested]
   push:
     branches: [main]
   pull_request:
     branches: [main]
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name != 'merge_group' }}
 jobs:
   build:
     runs-on: blacksmith-2vcpu-ubuntu-2404
